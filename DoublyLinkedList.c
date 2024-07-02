@@ -86,12 +86,14 @@ doubly_list *insert_item_after(doubly_list **head, doubly_list *base_item, doubl
     doubly_list *next_item = base_item->next;
 
     new_item->prev = base_item;
-    
-    new_item->next = base_item->next;
+    new_item->next = next_item;
 
     base_item->next = new_item;
 
-    next_item->prev = new_item; 
+    if (next_item != NULL)
+    {
+        next_item->prev = new_item;
+    }
 
     return new_item;
 }
@@ -133,15 +135,18 @@ void printList(struct doubly_list* head)
 
 int main()
 {
+    // INIT
     doubly_list *head =  NULL;
     
+    //APPEND
+
     doubly_data_int doubly_value0;
     doubly_value0.item = 1;
     list_append(&head, DOUBLY_LIST(doubly_value0));
 
     doubly_data_int doubly_value1;
     doubly_value1.item = 2;
-    //list_append(&head, DOUBLY_LIST(doubly_value1));
+    list_append(&head, DOUBLY_LIST(doubly_value1));
 
     doubly_data_int doubly_value2;
     doubly_value2.item = 3;
@@ -155,16 +160,17 @@ int main()
     printf("Doubly List: ");
     printList(head);
 
-    //list_remove(&head, DOUBLY_LIST(doubly_value2));
+    //REMOVE
+    list_remove(&head, DOUBLY_LIST(doubly_value2));
 
-    //insert_item_after(&head,DOUBLY_LIST(doubly_value3), DOUBLY_LIST(doubly_value1)); // non funziona
-    // insert_item_before(&head,DOUBLY_LIST(doubly_value3), DOUBLY_LIST(doubly_value1));
+    // INSERT AFTER
+    insert_item_after(&head,DOUBLY_LIST(doubly_value3), DOUBLY_LIST(doubly_value1)); 
+
+    // INSERT BEFORE
+    insert_item_before(&head,DOUBLY_LIST(doubly_value3), DOUBLY_LIST(doubly_value1));
 
 
     printList(head);
 
-
-
-  
 }
 

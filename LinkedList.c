@@ -1,129 +1,118 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
 
-#define LINKED_LIST(x) &(x)->list_item 
 
-struct list_node
+//MACRO
+#define NEW_INT_NODE(val) new_int_linked_node(val)
+
+typedef struct int_linked_node
 {
-    struct list_node *next;      
-};
+    struct int_linked_node* next;
+    int value;
 
-struct list_data_int
+} int_linked_node;
+
+typedef struct linked_list
 {
-    struct list_node list_item;
-    int item;       
-};
+    int_linked_node* head;
+
+} linked_list;
 
 
-struct list_node *list_get_tail(struct list_node **head)
+
+linked_list* new_linked_list()
 {
-    struct list_node *current_node = *head;
-    struct list_node *last_node = NULL;
-    while (current_node)
-    {
-        last_node = current_node;
-        current_node = current_node->next;
-    }
-    
-    return last_node;
+    linked_list* list = (linked_list*)malloc(sizeof(linked_list));
+    list->head = NULL;
+    return list;
 }
 
-
-struct list_node *list_append(struct list_node **head, struct list_node *item)  
-    {
-        struct list_node *tail = list_get_tail(head);
-
-        if (!tail)
-        {
-            *head = item;
-        }
-        else
-        {
-            tail->next = item;
-        }
-
-        item->next = NULL;
-
-        return item;
-        
-    }
-
-struct list_node *list_remove(struct list_node **head, struct list_node *target)
+void free_linked_node(int_linked_node* node)
 {
-    if (*head == NULL)
-    {
-        return NULL;
-    }
-    
-    struct list_node *current = *head;
+    free(node);
+}
 
-    while (current->next !=NULL && current->next != target)
+void delete_linked_list(linked_list* list)
+{
+    while (list->head)
     {
+        int_linked_node* node = list->head;
+        list->head = node->next;
+        free_linked_node(node);
+    }
+    free(list);
+}
+
+int_linked_node* add_linked_list(linked_list* list, int_linked_node* node)
+{
+    node->next = list->head;
+    list->head = node;
+    return node;
+}
+
+int_linked_node* new_int_linked_node(int val)
+{
+    int_linked_node* node = (int_linked_node*)malloc(sizeof(int_linked_node));
+    node->next = NULL;
+    node->value = val;
+    return node;
+}
+
+void remove_value(linked_list* list, int value)
+{
+    int_linked_node* current = list->head;
+    int_linked_node* prev = NULL;
+
+    while (current != NULL)
+    {
+        if (current->value == value)
+        {
+            if (prev == NULL)
+            {
+                // If the node to remove is the first 
+                list->head = current->next;
+            }
+            else
+            {
+                prev->next = current->next;
+            }
+
+            free_linked_node(current);
+            return;  
+        }
+
+        prev = current;
         current = current->next;
-    } 
-    
-
-    if (current->next == NULL)
-    {
-        return NULL;
     }
-
-    current->next = target->next;
-    
-    return target;
 }
 
-
-void printList(struct list_node* head) 
+int main(int argc, char* argv[])
 {
-        struct list_data_int *current_item = (struct list_data_int* )head;
+    //INIT
+    linked_list* int_list = new_linked_list();
 
-        while (current_item) 
-        {
-            printf("%d ", current_item->item);
-            current_item = (struct list_data_int* )current_item->list_item.next;
-        }
+    // ADD
+    add_linked_list(int_list, NEW_INT_NODE(10));
+    add_linked_list(int_list, NEW_INT_NODE(6));
+    add_linked_list(int_list, NEW_INT_NODE(1));
 
-        printf("\n");
-}
-
-int main()
-{
-    struct list_node *head = NULL;
-
-    // APPEND
-    struct list_data_int *list_value = (struct list_data_int *)malloc(sizeof(struct list_data_int));
-    list_value->item = 1;
-    list_append(&head, LINKED_LIST(list_value));
-
-    struct list_data_int *list_value1 = (struct list_data_int *)malloc(sizeof(struct list_data_int));
-    list_value1->item = 2;
-    list_append(&head, LINKED_LIST(list_value1));
-
-    struct list_data_int *list_value2 = (struct list_data_int *)malloc(sizeof(struct list_data_int));
-    list_value2->item = 3;
-    list_append(&head, LINKED_LIST(list_value2));
-
-    struct list_data_int *list_value3 = (struct list_data_int *)malloc(sizeof(struct list_data_int));
-    list_value3->item = 4;
-    list_append(&head, LINKED_LIST(list_value3));
-
-    printf("Linked List: ");
-    printList(head);
-
+    printf("Linked List before removal:\n");
+    for (int_linked_node* current = int_list->head; current; current = current->next)
+    {
+        printf("%d\n", current->value);
+    }
 
     // REMOVE
-    list_remove(&head, LINKED_LIST(list_value1)); 
+    remove_value(int_list, 6);
 
-    printList(head);
+    printf("\nLinked List after removal:\n");
+    for (int_linked_node* current = int_list->head; current; current = current->next)
+    {
+        printf("%d\n", current->value);
+    }
 
-    // Memory deallocation
-    free(list_value);
-    free(list_value1);
-    free(list_value2);
-    free(list_value3);
+    //DELETE
+    delete_linked_list(int_list);
 
     return 0;
 }
-    

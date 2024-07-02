@@ -143,6 +143,7 @@ void set_remove(ex_set *set, const char *key)
 
 int main(int argc, char **argv)
 {
+    //INIT
     ex_set myset;
 
     memset(&myset, 0, sizeof(ex_set)); // to quickly clear the memory
